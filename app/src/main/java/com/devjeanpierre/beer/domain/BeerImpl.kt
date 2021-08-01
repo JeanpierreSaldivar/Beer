@@ -1,11 +1,11 @@
 package com.devjeanpierre.beer.domain
 
 
+import com.devjeanpierre.beer.data.model.Beer
 import com.devjeanpierre.beer.data.model.ResponseDataBeer
-import com.devjeanpierre.beer.data.remote.source.BeerDataSource
+import com.devjeanpierre.beer.data.remote.BeerDataSource
+import javax.inject.Inject
 
-class BeerImpl(private val dataSource: BeerDataSource) : BeerRepo {
-    override suspend fun getListBeer(): ResponseDataBeer = dataSource.getListBeer()
-
-    override suspend fun getBeerForName(name:String): ResponseDataBeer = dataSource.getBeer(name)
+class BeerImpl @Inject constructor(private val dataSource: BeerDataSource){
+    suspend fun getListBeer(): List<Beer> = dataSource.getListBeer()
 }
