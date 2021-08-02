@@ -23,6 +23,7 @@
 
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:navigationBarColor">@color/beer_color</item>
     </style>
 
 </resources>
