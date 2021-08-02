@@ -57,10 +57,10 @@ dependencies {
 
     /**Picasso*/
     implementation "com.squareup.picasso:picasso:2.71828"
+
     /**
      * retrofit(webService)
      */
-
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
@@ -85,5 +85,13 @@ dependencies {
 
     /**skeleton by faceboook */
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    /** For instrumentation tests*/
+    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.38.1'
+    androidTestAnnotationProcessor 'com.google.dagger:hilt-compiler:2.38.1'
+
+    /** For local unit tests*/
+    testImplementation 'com.google.dagger:hilt-android-testing:2.38.1'
+    testAnnotationProcessor 'com.google.dagger:hilt-compiler:2.38.1'
 
 }

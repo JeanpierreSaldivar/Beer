@@ -36,11 +36,15 @@ class AdapterListBeer(private val listener: AdapterListBeerListener): RecyclerVi
                 title.text = beer.name
                 description.text = beer.description
                 image.loadByResourceWithoutCache(beer.image_url)
+                content.setOnClickListener {
+                    listener.onClick(beer,adapterPosition)
+                }
             }
+
         }
     }
 
 }
 interface AdapterListBeerListener {
-    fun onClick(){}
+    fun onClick(beer:Beer, position :Int){}
 }

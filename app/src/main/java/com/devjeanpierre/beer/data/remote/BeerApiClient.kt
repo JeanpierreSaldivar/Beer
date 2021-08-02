@@ -9,8 +9,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface BeerApiClient {
-
     @GET("beers?page=2&per_page=80")
     suspend fun getBeers(): Response<List<Beer>>
-
 }

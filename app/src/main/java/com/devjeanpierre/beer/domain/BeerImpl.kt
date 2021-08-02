@@ -1,8 +1,6 @@
 package com.devjeanpierre.beer.domain
 
-
 import com.devjeanpierre.beer.data.model.Beer
-import com.devjeanpierre.beer.data.model.ResponseDataBeer
 import com.devjeanpierre.beer.data.remote.BeerDataSource
 import javax.inject.Inject
 

@@ -13,14 +13,4 @@ data class Beer (
     val description:String="",
     @SerializedName("ph")
     val ph:Double ?= 0.0
-   )
-
-
-data class ResponseDataBeer(
-    @SerializedName("beer")
-    val beer: Beer ?= null,
-    @SerializedName("messageError")
-    val messageError:String ?=null,
-    @SerializedName("listBeer")
-    val listBeer:List<Beer> ?=null
 )

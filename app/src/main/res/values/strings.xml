@@ -2,6 +2,11 @@
     <string name="app_name">Beer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="empty_message">No hay cervezas disponibles</string>
-    <string name="buscar_cerveza">Buscar cerveza</string>
+    <string name="empty_message">No beers available</string>
+    <string name="no_connection">No internet connection</string>
+    <string name="buscar_cerveza">Search for beer</string>
+    <string name="ph">pH:</string>
+    <string name="description">Description:</string>
+    <string name="ph_example">4.5</string>
+    <string name="description_example">Our flagship beer that kick started the craft beer revolution. This is James and Martins original take on an American IPA, subverted with punchy New Zealand hops. Layered with new world hops to create an all-out riot of grapefruit, pineapple and lychee before a spiky, mouth-puckering bitter finish.</string>
 </resources>

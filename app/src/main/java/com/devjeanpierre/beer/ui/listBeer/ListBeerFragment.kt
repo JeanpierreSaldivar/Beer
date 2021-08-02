@@ -8,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.commit
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,29 +22,36 @@ import com.devjeanpierre.beer.databinding.FragmentListBeerBinding
 import com.devjeanpierre.beer.presentation.BeerViewModel
 import com.devjeanpierre.beer.core.Result
 import com.devjeanpierre.beer.data.model.Beer
+import com.devjeanpierre.beer.ui.detailBeer.DetailBeerFragment
 import com.devjeanpierre.beer.utils.hideKeyboard
+import com.devjeanpierre.beer.utils.isInternetAvailable
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
 class ListBeerFragment : Fragment(){
+    private val nameClass = this::class.java.name
     private var _binding: FragmentListBeerBinding? = null
     private val binding get() = _binding!!
     private val beerViewModel: BeerViewModel by viewModels()
     private lateinit var adapter: AdapterListBeer
     private lateinit var recycler: RecyclerView
-    private lateinit var listBeer: List<Beer>
+    private var listBeer: List<Beer> ?= null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentListBeerBinding.inflate(inflater, container, false)
         adapter= AdapterListBeer(object:AdapterListBeerListener{
-            override fun onClick() {
-                super.onClick()
-
+            override fun onClick(beer: Beer, position: Int) {
+                super.onClick(beer, position)
+                requireActivity().hideKeyboard()
+                dataForDeatilBeerFragment(beer)
+                goToDeatilBeerFragment(beer, position)
             }
         })
+        recyclerReady()
         getListBeer()
         binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -75,59 +85,7 @@ class ListBeerFragment : Fragment(){
         return binding.root
     }
 
-    private fun getListForName() {
-        val  name = binding.etSearch.text.toString().lowercase(Locale.getDefault())
-        val listFilter = listBeer.filter{it.name.lowercase(Locale.getDefault()).contains(name)}
-        if (listFilter.isNullOrEmpty()){
-            errorOrEmptyShow(BeerApp.appContext.resources.getText(R.string.empty_message) as String,false)
-        }else{
-            binding.recycler.visibility = View.VISIBLE
-            binding.emptyList.visibility = View.GONE
-            listFilter.let { adapter.setListData(it) }
-            binding.recycler.visibility = View.VISIBLE
-        }
-
-    }
-
-
-    private fun getListBeer() {
-        beerViewModel.getListBeer().observe(viewLifecycleOwner, Observer {result->
-            when(result){
-                is Result.Loading ->{
-                    binding.recycler.visibility = View.INVISIBLE
-                    binding.shimmer.apply{
-                        visibility = View.VISIBLE
-                        startShimmer()
-                    }
-                }
-                is Result.Success ->{
-                    binding.shimmer.apply{
-                        stopShimmer()
-                        visibility = View.GONE
-                    }
-                    listBeer = result.data
-                    listBeer?.let{
-                        checkEmptyList(it)
-                    }
-
-                }
-                is Result.Failure->{
-                    errorOrEmptyShow(result.exception.message ?: "Ocurrió un error inesperado",true)
-                }
-            }
-        })
-    }
-
-    private fun checkEmptyList(list: List<Beer>) {
-        if (list.isNullOrEmpty()){
-            errorOrEmptyShow(BeerApp.appContext.resources.getText(R.string.empty_message) as String,false)
-        }else{
-            listShow(list)
-            binding.recycler.visibility = View.VISIBLE
-        }
-    }
-
-    private fun listShow(listBeer: List<Beer>) {
+    private fun recyclerReady() {
         binding.recycler.let {
             recycler = it
         }
@@ -135,6 +93,93 @@ class ListBeerFragment : Fragment(){
         recycler.adapter = adapter
         recycler.setHasFixedSize(true)
         recycler.itemAnimator = DefaultItemAnimator()
+    }
+
+    private fun dataForDeatilBeerFragment(beer: Beer) {
+        val beerJson = Gson().toJson(beer)
+        setFragmentResult("requestKey",bundleOf("beerData" to beerJson))
+    }
+
+    private fun goToDeatilBeerFragment(beer: Beer, position: Int) {
+        requireActivity().supportFragmentManager.commit {
+            replace(R.id.container_fragment, DetailBeerFragment())
+            addToBackStack(nameClass)
+        }
+    }
+
+    private fun getListForName() {
+        if (isInternetAvailable(requireContext())) {
+            if(listBeer.isNullOrEmpty()) getListBeer()
+            val name = binding.etSearch.text.toString().lowercase(Locale.getDefault())
+            val listFilter =
+                listBeer?.filter { it.name.lowercase(Locale.getDefault()).contains(name) }
+            if (listFilter.isNullOrEmpty()) {
+                noResultList()
+            } else {
+                binding.recycler.visibility = View.VISIBLE
+                binding.emptyList.visibility = View.GONE
+                listFilter.let { adapter.setListData(it) }
+                binding.recycler.visibility = View.VISIBLE
+            }
+        }else{
+            noConnection()
+        }
+    }
+
+    private fun noResultList() {
+        binding.imageEmpty.setImageDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_no_beer))
+        errorOrEmptyShow(BeerApp.appContext.resources.getText(R.string.empty_message) as String,true)
+    }
+
+    private fun noConnection() {
+        binding.imageEmpty.setImageDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_baseline_wifi_off_24))
+        errorOrEmptyShow(BeerApp.appContext.resources.getText(R.string.no_connection) as String,true)
+    }
+
+
+    private fun getListBeer() {
+        if (isInternetAvailable(requireContext())){
+            beerViewModel.getListBeer().observe(viewLifecycleOwner,{result->
+                when(result){
+                    is Result.Loading ->{
+                        binding.recycler.visibility = View.INVISIBLE
+                        binding.shimmer.apply{
+                            visibility = View.VISIBLE
+                            startShimmer()
+                        }
+                    }
+                    is Result.Success ->{
+                        binding.shimmer.apply{
+                            stopShimmer()
+                            visibility = View.GONE
+                        }
+                        listBeer = result.data
+                        listBeer?.let {
+                            checkEmptyList(it)
+                        }
+
+
+                    }
+                    is Result.Failure->{
+                        errorOrEmptyShow(result.exception.message ?: "An unexpected error occurred",true)
+                    }
+                }
+            })
+        }else{
+            noConnection()
+        }
+    }
+
+    private fun checkEmptyList(list: List<Beer>) {
+        if (list.isNullOrEmpty()){
+            noResultList()
+        }else{
+            listShow(list)
+            binding.recycler.visibility = View.VISIBLE
+        }
+    }
+
+    private fun listShow(listBeer: List<Beer>) {
         adapter.setListData(listBeer)
     }
 

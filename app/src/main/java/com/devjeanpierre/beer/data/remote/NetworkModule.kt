@@ -11,6 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
     private const val baseBeerApiUrl = "https://api.punkapi.com/v2/"
 
     @Singleton
