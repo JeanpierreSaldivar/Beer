@@ -1,5 +1,6 @@
-package com.devjeanpierre.beer.data.remote
+package com.devjeanpierre.beer.data.remote.prueva
 
+import com.devjeanpierre.beer.data.remote.BeerApiClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -8,12 +9,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-/*
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object NetworkModuleTest {
 
-    private const val baseBeerApiUrl = "https://api.punkapi.com/v2/"
+    private const val baseBeerApiUrl = "http://185.166.215.240/api/v1/"
 
     @Singleton
     @Provides
@@ -24,9 +24,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideQuoteApiClient(retrofit:Retrofit): BeerApiClient {
-        return retrofit.create(BeerApiClient::class.java)
+    fun provideQuoteApiClient(retrofit: Retrofit): TestApiClient {
+        return retrofit.create(TestApiClient::class.java)
     }
 }
-*/
-

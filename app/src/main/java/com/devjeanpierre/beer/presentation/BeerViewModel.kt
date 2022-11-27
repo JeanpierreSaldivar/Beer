@@ -12,10 +12,19 @@ import javax.inject.Inject
 @HiltViewModel
 class BeerViewModel @Inject constructor(private val repo: BeerImpl) : ViewModel() {
 
-    fun getListBeer() = liveData(viewModelScope.coroutineContext + Dispatchers.Main) {
+    /*fun getListBeer() = liveData(viewModelScope.coroutineContext + Dispatchers.Main) {
         emit(Result.Loading())
         try {
             emit(Result.Success(repo.getListBeer()))
+        } catch (e: Exception) {
+            emit(Result.Failure(e))
+        }
+    }*/
+
+    fun getList() = liveData(viewModelScope.coroutineContext + Dispatchers.Main) {
+        emit(Result.Loading())
+        try {
+            emit(Result.Success(repo.getList()))
         } catch (e: Exception) {
             emit(Result.Failure(e))
         }

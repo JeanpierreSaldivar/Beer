@@ -53,6 +53,7 @@ class ListBeerFragment : Fragment(){
         })
         recyclerReady()
         getListBeer()
+        getList()
         binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 requireActivity().hideKeyboard()
@@ -138,7 +139,7 @@ class ListBeerFragment : Fragment(){
 
 
     private fun getListBeer() {
-        if (isInternetAvailable(requireContext())){
+        /*if (isInternetAvailable(requireContext())){
             beerViewModel.getListBeer().observe(viewLifecycleOwner,{result->
                 when(result){
                     is Result.Loading ->{
@@ -167,8 +168,25 @@ class ListBeerFragment : Fragment(){
             })
         }else{
             noConnection()
-        }
+        }*/
     }
+
+    fun getList(){
+        beerViewModel.getList().observe(viewLifecycleOwner,{result->
+            when(result){
+                is Result.Loading ->{
+                    println(result)
+                }
+                is Result.Success ->{
+                    println(result)
+                }
+                is Result.Failure->{
+                    errorOrEmptyShow(result.exception.message ?: "An unexpected error occurred",true)
+                }
+            }
+        })
+    }
+
 
     private fun checkEmptyList(list: List<Beer>) {
         if (list.isNullOrEmpty()){
